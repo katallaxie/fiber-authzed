@@ -1,11 +1,20 @@
 package authzed
 
-import "github.com/gofiber/fiber/v3"
+import (
+	"context"
 
-// New creates a new middleware handler
+	"github.com/gofiber/fiber/v3"
+)
+
+// Checker is the interface checking for authorization.
+type Checker interface {
+	// Allowed ...
+	Allowed(context.Context) (bool, error)
+}
+
+// New creates a new middleware handler.
 func New(config ...Config) fiber.Handler {
-	cfg := ConfigDefault
-	cfg = configDefault(config...)
+	cfg := configDefault(config...)
 
 	// Return a new middleware handler
 	return func(c fiber.Ctx) error {
@@ -19,7 +28,7 @@ func New(config ...Config) fiber.Handler {
 	}
 }
 
-// Helper function to set default values
+// Helper function to set default values.
 func configDefault(config ...Config) Config {
 	if len(config) < 1 {
 		return ConfigDefault
@@ -27,6 +36,14 @@ func configDefault(config ...Config) Config {
 
 	// Override default config
 	cfg := config[0]
+
+	if cfg.Checker == nil {
+		cfg.Checker = ConfigDefault.Checker
+	}
+
+	if cfg.ErrorHandler == nil {
+		cfg.ErrorHandler = ConfigDefault.ErrorHandler
+	}
 
 	return cfg
 }

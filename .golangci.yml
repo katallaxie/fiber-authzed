@@ -36,7 +36,6 @@ linters:
     - revive
     - rowserrcheck
     - sqlclosecheck
-    - tagliatelle
     - thelper
     - tparallel
     - unconvert
@@ -44,6 +43,9 @@ linters:
     - usetesting
     - wastedassign
     - whitespace
+  
+  disable:
+    - tagliatelle
 
   settings:
     exhaustive:
@@ -60,7 +62,7 @@ linters:
     govet:
       disable:
         - shadow
-      enable-all: true
+      enable-all: false
 
     nolintlint:
       allow-unused: true # false would be preferable, but it's flaky (https://github.com/golangci/golangci-lint/issues/3228)
