@@ -1,0 +1,57 @@
+services:
+
+  spicedb:
+    image: authzed/spicedb
+    command: serve
+    restart: always
+    networks:
+      - authzed
+    ports:
+      - 8443:8443
+      - 9090:9090
+      - 50051:50051
+    environment:
+      - SPICEDB_GRPC_PRESHARED_KEY=example
+      - SPICEDB_DATASTORE_ENGINE=postgres
+      - SPICEDB_DATASTORE_CONN_URI=postgres://postgres:password@postgres:5432/postgres?sslmode=disable
+      - SPICEDB_HTTP_ENABLED=true
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  migrate:
+    image: authzed/spicedb
+    command: migrate head
+    restart: on-failure
+    networks:
+      - authzed
+    environment:
+      - SPICEDB_DATASTORE_ENGINE=postgres
+      - SPICEDB_DATASTORE_CONN_URI=postgres://postgres:password@postgres:5432/postgres?sslmode=disable
+    depends_on:
+      - postgres
+  
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    networks:
+      - authzed
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=default
+    volumes:
+      - pg:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pg:
+
+networks:
+  authzed:

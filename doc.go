@@ -1,2 +1,2 @@
-// Package example is a simple example package.
-package example
+// Package authzed provides a client for the Authzed API.
+package authzed
