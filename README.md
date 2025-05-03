@@ -1,36 +1,19 @@
-# :partying_face: Template Go
+# 👮 Authzed
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/katallaxie/template-go?quickstart=1)
+## Examples
 
-> This is a GitHub Template Repository. You can use the green button to create a new repository based on this template. Read more about [GitHub Template Repositories](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template).
-> Have a look at the [Standard Go Project Layout](https://github.com/golang-standards/project-layout) for setup conventions.
+See [examples](https://github.com/katallaxie/fiber-authzed/tree/main/examples) to understand the provided interfaces.
 
-## Get Started
-
-This template supports `Makefile` to run tooling.
-
-> `make` is choosen as it is available on most systems.
+## Development
 
 ```bash
-# show `help`
-make help
+zed context set dev localhost:50051 example --insecure
 ```
-
-Other available targets are
 
 ```bash
-build                          Build the binary file.
-clean                          Remove previous build.
-fmt                            Run go fmt against code.
-generate                       Generate code.
-help                           Display this help screen.
-lint                           Run lint.
-mocks                          Generate mocks.
-release                        Release the project.
-test                           Run tests.
-vet                            Run go vet against code.
+zed import ./examples/authzed-download-2233c2.yaml
 ```
 
-The convention is to use `make` to run the build.
+## License
 
-Happy coding!
+[MIT](/LICENSE)
