@@ -8,6 +8,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3filter"
 	authzed "github.com/katallaxie/fiber-authzed"
 	"github.com/mitchellh/mapstructure"
+	middleware "github.com/oapi-codegen/fiber-middleware"
 )
 
 // DefaultExtensionName is the default extension name.
@@ -205,7 +206,9 @@ func OasAuthenticate(opts ...OasAuthenticateOpt) openapi3filter.AuthenticationFu
 	options.Configure(opts...)
 
 	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
-		// c := middleware.GetFiberContext(ctx)
+		c := middleware.GetFiberContext(ctx)
+
+		fmt.Println("OasAuthenticate", c.Method(), c.Path())
 
 		if options.Next != nil && options.Next(ctx, input) {
 			return nil

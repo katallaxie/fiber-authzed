@@ -15,6 +15,10 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
+const (
+	OpenIdScopes = "openId.Scopes"
+)
+
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	// Code HTTP status code
@@ -27,17 +31,14 @@ type ErrorResponse struct {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/5RUwW7jOAz9FYG7R9dOd7FA4dseBmgwl2Ka26SYMjJtqZUljUgHbQP/+0By0mknncPc",
-	"EuqRfHx89AF0GGPw5IWhPQBrQyOWn59SCukLcQyeKQdiCpGSWCrPOnQl2hHrZKPY4KGF683mRrGgTKwK",
-	"ogJ5jgQtWC80UIK5AsqVz3NLQzUSMw5vElmS9QPMcwWJvk82UQft12ORauFx94oOuwfSAnOGW9+H8zYb",
-	"Y1lZVmJIffbhSf1/s1YcSdveasygeolbVqiY0t5qUmJQ1IgeB2K1oZSwD2lU5Pc2BT9m/RT6TrHHyCYI",
-	"11u/9RtDiUohr3CP1uHOkbomNyptMInqQyrNCvr+/p4NObf1JiMSxaCw69RjZmNEIrdN80KWuR6smGlX",
-	"29Dkxybjm1KR3yZPsUOhY4QJkzbLQ04q/bY+C23FZe0yEahgT4kXqS7rVb3KGwuRPEYLLfxbr+pLqCCi",
-	"mOKDhrQpKg8kvxGbfBeD9aIylBbl8yqJRe1QPyoJJaadJS+1WkuWbGLqij5CLNYPKk4pBqasLBRKqWxr",
-	"3WXvZBLZIItdC7N/VqvFqF7IF24YozvuuHngTPDk+HN/n8Y6d+EHTns/9O2kNTH3k1MnQlnE//6Qz9+J",
-	"emjhr+bniTbH+2zeH+cHHNZeKHl06pbSnpIqCYU+T+OI6fko2ttlZCvgwPm6ip53FTxd9HZH6QInMS8X",
-	"/VCIHSdvD+BxzFIMLuzQQVX+c0RdFHtmoRHK2TpcaL1mYDdan98mpvIpyA2+nZS1nf6lWIHNcxmUy0SZ",
-	"5gGm5KCF0224oNGZwNJera5WMN/NPwIAAP//kBYfTOAEAAA=",
+	"H4sIAAAAAAAC/5SST5PTPAzGv4pH73vMtgsMl9yZoTeG7a10GNdREi+JbCSZoXTy3Rmr7bJL90JOjq0/",
+	"Pz16ThDSnBMhqUB7Agkjzt6OH5gTf0bJiQTrReaUkTWiPYfU2W2HEjhmjYmghY/b7Scn6rWIs4gG9JgR",
+	"WoikOCDD0gDWyre51tDNKOKHZ4miHGmAZWmA8XuJjB20u0uR5syxf4pOh0cMCksNj9QnaKlMUwMpI/kc",
+	"oYV3q/vVG2ggex1tkjWGMdXDgHpLtR2jOKQup0jqaiiK0xFdhUFRd/Dhm9Nkd2GKSLpyG3VRXBHsXJ/Y",
+	"KYpGGlwunJOgrL4QGBL72mXT1ekrRB3xLLiRvb2/P0tNimRsPucpBstaP0oFvO7sdkPXsW51fEWrl0M/",
+	"lBBQpC+TuwLVxb3/R57/GXto4b/1H5OtLw5bv7TXKwwbUmTyk3tA/oHsLMHwBUPhqEdodydbbBVwt1/2",
+	"DUiZZ8/Hi57P91QN5Qep1jGp9w38vOvjAfnOFx1/3fWDMV9EaU9Afq4qDVM6+Aka+5fsg4l5FMUZzJOT",
+	"PxM/ZfhujlTfiqD5vDb4ehU9duGvYha22Pc7AAD//wQb5EmQAwAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

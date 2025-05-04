@@ -27,6 +27,8 @@ type MiddlewareFunc fiber.Handler
 // Echo operation middleware
 func (siw *ServerInterfaceWrapper) Echo(c *fiber.Ctx) error {
 
+	c.Context().SetUserValue(OpenIdScopes, []string{})
+
 	return siw.Handler.Echo(c)
 }
 

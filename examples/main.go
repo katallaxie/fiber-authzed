@@ -71,6 +71,10 @@ func (s *WebSrv) Start(ctx context.Context, ready server.ReadyFunc, run server.R
 		}
 		swagger.Servers = nil
 
+		app := fiber.New()
+		app.Use(requestid.New())
+		app.Use(logger.New())
+
 		c, err := client.NewClient(
 			"localhost:50051",
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -79,20 +83,14 @@ func (s *WebSrv) Start(ctx context.Context, ready server.ReadyFunc, run server.R
 		if err != nil {
 			return err
 		}
-
-		app := fiber.New()
-		app.Use(requestid.New())
-		app.Use(logger.New())
-
-		cfg := authzed.Config{
-			Checker: authzed.NewChecker(c),
-		}
-		app.Use(authzed.New(cfg))
+		check := authzed.NewChecker(c)
 
 		validatorOptions := &middleware.Options{}
 		// validatorOptions.Options.AuthenticationFunc = auth.NewAuthenticator(auth.WithBasicAuthenticator(auth.NewBasicAuthenticator(store)))
 		validatorOptions.Options.AuthenticationFunc = oas.Authenticate(
-			oas.OasAuthenticate(),
+			oas.OasAuthenticate(
+				oas.WithChecker(check),
+			),
 		)
 
 		app.Use(middleware.OapiRequestValidatorWithOptions(swagger, validatorOptions))
