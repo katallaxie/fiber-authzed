@@ -5,11 +5,21 @@ import (
 	"log"
 	"os"
 
+	client "github.com/authzed/authzed-go/v1"
+	"github.com/authzed/grpcutil"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
+	authzed "github.com/katallaxie/fiber-authzed"
+	"github.com/katallaxie/fiber-authzed/examples/api"
+	"github.com/katallaxie/fiber-authzed/oas"
+	"github.com/katallaxie/pkg/cast"
 	"github.com/katallaxie/pkg/logx"
-
-	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/middleware/requestid"
+	"github.com/katallaxie/pkg/server"
+	middleware "github.com/oapi-codegen/fiber-middleware"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // Config ...
@@ -23,11 +33,85 @@ type Flags struct {
 }
 
 var cfg = &Config{
-	Flags: &Flags{},
+	Flags: &Flags{
+		Addr: ":8080",
+	},
+}
+
+// WebSrv is the server that implements the Noop interface.
+type WebSrv struct {
+	cfg *Config
+}
+
+// NewWebSrv returns a new instance of NoopSrv.
+func NewWebSrv(cfg *Config) *WebSrv {
+	return &WebSrv{cfg}
+}
+
+var _ api.StrictServerInterface = (*apiHandlers)(nil)
+
+type apiHandlers struct{}
+
+// NewAPIHandlers returns a new instance of APIHandlers.
+func NewAPIHandlers() *apiHandlers {
+	return &apiHandlers{}
+}
+
+// Echo is a simple echo handler.
+func (h *apiHandlers) Echo(ctx context.Context, request api.EchoRequestObject) (api.EchoResponseObject, error) {
+	return api.Echo200JSONResponse{Echo: cast.Ptr("hello world")}, nil
+}
+
+// Start starts the server.
+func (s *WebSrv) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
+	return func() error {
+		swagger, err := api.GetSwagger()
+		if err != nil {
+			return err
+		}
+		swagger.Servers = nil
+
+		c, err := client.NewClient(
+			"localhost:50051",
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpcutil.WithInsecureBearerToken("example"),
+		)
+		if err != nil {
+			return err
+		}
+
+		app := fiber.New()
+		app.Use(requestid.New())
+		app.Use(logger.New())
+
+		cfg := authzed.Config{
+			Checker: authzed.NewChecker(c),
+		}
+		app.Use(authzed.New(cfg))
+
+		validatorOptions := &middleware.Options{}
+		// validatorOptions.Options.AuthenticationFunc = auth.NewAuthenticator(auth.WithBasicAuthenticator(auth.NewBasicAuthenticator(store)))
+		validatorOptions.Options.AuthenticationFunc = oas.Authenticate(
+			oas.OasAuthenticate(),
+		)
+
+		app.Use(middleware.OapiRequestValidatorWithOptions(swagger, validatorOptions))
+
+		handlers := NewAPIHandlers()
+		handler := api.NewStrictHandler(handlers, nil)
+		api.RegisterHandlers(app, handler)
+
+		err = app.Listen(s.cfg.Flags.Addr)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&cfg.Flags.Addr, "addr", ":8080", "addr")
+	rootCmd.PersistentFlags().StringVar(&cfg.Flags.Addr, "addr", cfg.Flags.Addr, "addr")
 
 	rootCmd.SilenceUsage = true
 }
@@ -38,7 +122,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func run(_ context.Context) error {
+func run(ctx context.Context) error {
 	log.SetFlags(0)
 	log.SetOutput(os.Stderr)
 
@@ -47,15 +131,12 @@ func run(_ context.Context) error {
 		return err
 	}
 
-	app := fiber.New()
-	app.Use(requestid.New())
+	srv := NewWebSrv(cfg)
 
-	err = app.Listen(cfg.Flags.Addr)
-	if err != nil {
-		return err
-	}
+	s, _ := server.WithContext(ctx)
+	s.Listen(srv, false)
 
-	return nil
+	return s.Wait()
 }
 
 func main() {

@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.json
+
+openapi: 3.0.1
+
+info:
+  title: Knox
+  version: 1.0.0
+  description: |
+    This is the Knox API specification. Knox is a service that manages Terraform environments and snapshots.
+
+    There is an available Helm chart for Knox.
+
+    ```shell
+    helm repo add knox https://zeiss.github.io/knox/helm/charts
+    helm repo update
+    helm search repo knox
+    ```
+
+servers:
+  - url: https://localhost:8080
+
+paths:
+  /echo:
+    get:
+      tags:
+        - Echo
+      summary: Echo the request
+      operationId: echo
+      description: |
+        This endpoint echoes the request back to the client. It is used for testing purposes.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  echo:
+                    type: string
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      # Add the policy to check if the user has access to create a team
+      x-fiber-authz-fga:
+        user:
+          namespace: user
+          auth_type: oidc
+        relation:
+          name: admin
+        object:
+          namespace: system
+          name: global
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: integer
+          description: HTTP status code
+      required:
+        - error
+        - code

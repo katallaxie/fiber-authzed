@@ -5,7 +5,7 @@ import (
 
 	"github.com/MicahParks/keyfunc/v2"
 	"github.com/getkin/kin-openapi/openapi3filter"
-	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v2"
 )
 
 var (
@@ -98,23 +98,15 @@ func WithBasicAuthSchema(auth openapi3filter.AuthenticationFunc) AuthenticatorOp
 	return WithSchema("basic", auth)
 }
 
-// Authenticate returns a nil error and the AuthClaims info (if available)
-// if the subject is authenticated or a non-nil error with an appropriate error cause otherwise.
-func Authenticate(opts ...AuthenticatorOpt) openapi3filter.AuthenticationFunc {
-	options := DefaultAuthenticatorOpts()
-	options.Configure(opts...)
-
+// Authenticate evalutes the authentication functions in the order they are provided.
+func Authenticate(fn ...openapi3filter.AuthenticationFunc) openapi3filter.AuthenticationFunc {
 	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
-		auth, ok := options.Schemas[input.SecurityScheme.Scheme]
-		if !ok {
-			return fiber.ErrForbidden
+		for _, f := range fn {
+			if err := f(ctx, input); err != nil {
+				return err
+			}
 		}
 
-		err := auth(ctx, input)
-		if err != nil {
-			return err
-		}
-
-		return auth(ctx, input)
+		return nil
 	}
 }
