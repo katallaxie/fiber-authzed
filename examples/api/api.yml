@@ -9,7 +9,7 @@ paths:
         - Echo
       summary: Echo the request
       security:
-        - openId: []
+        - basicAuth: []
       operationId: echo
       description: |
         This endpoint echoes the request back to the client. It is used for testing purposes.
@@ -41,6 +41,11 @@ paths:
           name: global
 
 components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Basic authentication for the API
   schemas:
     ErrorResponse:
       type: object

@@ -5,14 +5,16 @@ import (
 	"log"
 	"os"
 
+	"github.com/katallaxie/fiber-authzed/auth"
+	"github.com/katallaxie/fiber-authzed/examples/api"
+	"github.com/katallaxie/fiber-authzed/oas"
+
 	client "github.com/authzed/authzed-go/v1"
 	"github.com/authzed/grpcutil"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	authzed "github.com/katallaxie/fiber-authzed"
-	"github.com/katallaxie/fiber-authzed/examples/api"
-	"github.com/katallaxie/fiber-authzed/oas"
 	"github.com/katallaxie/pkg/cast"
 	"github.com/katallaxie/pkg/logx"
 	"github.com/katallaxie/pkg/server"
@@ -86,7 +88,7 @@ func (s *WebSrv) Start(ctx context.Context, ready server.ReadyFunc, run server.R
 		check := authzed.NewChecker(c)
 
 		validatorOptions := &middleware.Options{}
-		// validatorOptions.Options.AuthenticationFunc = auth.NewAuthenticator(auth.WithBasicAuthenticator(auth.NewBasicAuthenticator(store)))
+		validatorOptions.Options.AuthenticationFunc = auth.NewAuthenticator(auth.WithBasicAuthenticator(auth.NoopBasicAuthenticator))
 		validatorOptions.Options.AuthenticationFunc = oas.Authenticate(
 			oas.OasAuthenticate(
 				oas.WithChecker(check),

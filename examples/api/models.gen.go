@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	OpenIdScopes = "openId.Scopes"
+	BasicAuthScopes = "basicAuth.Scopes"
 )
 
 // ErrorResponse defines model for ErrorResponse.
@@ -31,14 +31,15 @@ type ErrorResponse struct {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/5SST5PTPAzGv4pH73vMtgsMl9yZoTeG7a10GNdREi+JbCSZoXTy3Rmr7bJL90JOjq0/",
-	"Pz16ThDSnBMhqUB7Agkjzt6OH5gTf0bJiQTrReaUkTWiPYfU2W2HEjhmjYmghY/b7Scn6rWIs4gG9JgR",
-	"WoikOCDD0gDWyre51tDNKOKHZ4miHGmAZWmA8XuJjB20u0uR5syxf4pOh0cMCksNj9QnaKlMUwMpI/kc",
-	"oYV3q/vVG2ggex1tkjWGMdXDgHpLtR2jOKQup0jqaiiK0xFdhUFRd/Dhm9Nkd2GKSLpyG3VRXBHsXJ/Y",
-	"KYpGGlwunJOgrL4QGBL72mXT1ekrRB3xLLiRvb2/P0tNimRsPucpBstaP0oFvO7sdkPXsW51fEWrl0M/",
-	"lBBQpC+TuwLVxb3/R57/GXto4b/1H5OtLw5bv7TXKwwbUmTyk3tA/oHsLMHwBUPhqEdodydbbBVwt1/2",
-	"DUiZZ8/Hi57P91QN5Qep1jGp9w38vOvjAfnOFx1/3fWDMV9EaU9Afq4qDVM6+Aka+5fsg4l5FMUZzJOT",
-	"PxM/ZfhujlTfiqD5vDb4ehU9duGvYha22Pc7AAD//wQb5EmQAwAA",
+	"H4sIAAAAAAAC/5STTY/TMBCG/4o1cHQ/AHHJbZGQ6G1FeysVcp1J4iWxjWeMKFX+O/Kk3d02XOgptefj",
+	"mXden8GGIQaPngmqM5DtcDDy+TmlkL4ixeAJy0FMIWJih3JtQy2nNZJNLrILHir4sts9KmLDmZREaOBT",
+	"RKjAecYWE4wasFSe50pDNSCRaV8lEifnWxhHDQl/Zpewhmp/KaInjsNzdDg+oWWJJrQ5OT5ty0wT9NGQ",
+	"sw+Zu3n3T+VKmcwdenbWlGPVhKS4Q/XwuAE9iVOaSJkXwo45wlhaOt8EqHzuew0hojfRQQUfluvlO9AQ",
+	"DXeCsULbhfLRIs9Jdp0jhb6OwXlWJRRJKMr4SKyOxv5QHOTM9g49L9WGlSOVCesJGomdb1XMKQZCWn7z",
+	"IEhJBtvURe8CUUSdVixk79frabme0QubibG/yLF6ogJ4dcncE9ex5pu7386o74beZmuRqMm9ugIVq3z8",
+	"T563CRuo4M3qxdari6dXt4b+B8PGMyZverXF9AuTkoQbK0G1vzHR/jAeNFAeBpNOF0lfr6p4xLRU/Cpq",
+	"HzT8XjTuiGlRnPZn0bSCfdGlOoM34rC2D0fTg5b/FI0VPU/EOIA8hN5M0M8Zph6cL3eZUB5XafD9qrur",
+	"7V0xCRvl9zcAAP//TLLMZAUEAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

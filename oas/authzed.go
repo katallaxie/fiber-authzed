@@ -6,6 +6,8 @@ import (
 	"net/url"
 
 	"github.com/getkin/kin-openapi/openapi3filter"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	authzed "github.com/katallaxie/fiber-authzed"
 	"github.com/mitchellh/mapstructure"
 	middleware "github.com/oapi-codegen/fiber-middleware"
@@ -208,30 +210,28 @@ func OasAuthenticate(opts ...OasAuthenticateOpt) openapi3filter.AuthenticationFu
 	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
 		c := middleware.GetFiberContext(ctx)
 
-		fmt.Println("OasAuthenticate", c.Method(), c.Path())
-
 		if options.Next != nil && options.Next(ctx, input) {
 			return nil
 		}
 
-		// // nolint:contextcheck
-		// user, relation, object, err := options.Builder.BuildWithContext(c.UserContext(), input)
-		// if err != nil {
-		// 	return err
-		// }
+		// nolint:contextcheck
+		user, relation, object, err := options.Builder.BuildWithContext(c.UserContext(), input)
+		if err != nil {
+			return err
+		}
 
-		// log.Debugw("OasAuthenticate", "user", user, "relation", relation, "object", object)
+		log.Debugw("OasAuthenticate", "user", user, "relation", relation, "object", object)
 
-		// allowed, err := options.Checker.Allowed(ctx, user, relation, object)
-		// if err != nil {
-		// 	return fiber.ErrUnauthorized
-		// }
+		allowed, err := options.Checker.Allowed(ctx, nil, nil, nil)
+		if err != nil {
+			return fiber.ErrUnauthorized
+		}
 
-		// log.Debugw("OasAuthenticate", "allowed", allowed)
+		log.Debugw("OasAuthenticate", "allowed", allowed)
 
-		// if !allowed {
-		// 	return fiber.ErrForbidden
-		// }
+		if !allowed {
+			return fiber.ErrForbidden
+		}
 
 		return nil
 	}
