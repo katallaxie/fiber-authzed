@@ -23,7 +23,7 @@ require (
 	github.com/oapi-codegen/fiber-middleware v1.0.2
 	github.com/spf13/cobra v1.9.1
 	github.com/zeiss/fiber-authz v1.0.33
-	google.golang.org/grpc v1.72.0
+	google.golang.org/grpc v1.72.1
 )
 
 require (
